@@ -1,9 +1,8 @@
 import datetime as dt
-
+import os
 from warnings import filterwarnings
-from telegram.warnings import PTBUserWarning
 
-
+import pandas as pd
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import (
     Application,
@@ -13,17 +12,23 @@ from telegram.ext import (
     MessageHandler,
     filters,
 )
-from constants import TOKEN
-import os
-import pandas as pd
+from telegram.warnings import PTBUserWarning
 
+from constants import TOKEN, USERS_DATA_PATH
 
 filterwarnings(
     action="ignore", message=r".*CallbackQueryHandler", category=PTBUserWarning
 )
 
 START_ROUTES, END_ROUTES = range(2)
-COUNTRIES, OTHER, PHONE_NUMBER, END = ["Countries", "Other", "Phone Number", "End"]
+COUNTRIES, COUNTRIES_OTHER, PHONE_NUMBER, END = [
+    "Countries",
+    "Other",
+    "Phone Number",
+    "End",
+]
+
+print("Bot started...")
 
 
 async def start(update, context):
@@ -51,9 +56,10 @@ async def start(update, context):
     ]
     if not file_exists:
         df = pd.DataFrame(columns=index_columns)
-        df.to_csv("users_data (development).csv", index=False)
-    df = pd.read_csv("users_data (development).csv")
-    if user_id not in set(df["User Id"].values):
+        # df.to_csv("users_data (development).csv", index=False)
+        df.to_excel(USERS_DATA_PATH, index=False)
+    # df = pd.read_csv("users_data (development).csv")
+    if user_id not in set(str(df["User Id"].values)):
         df = pd.concat(
             [
                 df,
@@ -63,8 +69,8 @@ async def start(update, context):
                 ),
             ]
         )
-        df.to_csv("users_data (development).csv", index=False)
-        df.to_excel("users_data.xlsx", index=False)
+        # df.to_csv("users_data (development).csv", index=False)
+        df.to_excel(USERS_DATA_PATH, index=False)
 
     reply_markup = InlineKeyboardMarkup(
         [
@@ -79,86 +85,61 @@ async def start(update, context):
     return COUNTRIES
 
 
-async def phone_number(update, context):
-    query = update.callback_query
-    await query.answer()
-    message = query.message
-    await message.reply_text(message)
-    bot = context.bot
-    chat_id = message.chat.id
-
-    await query.message.reply_text(message.chat)
-
-    # if message.contact:
-    #     cpn = message.contact.phone_number
-    #     cfn = message.contact.first_name
-    #     await bot.send_message(chat_id, "#contact [{0}](https://telegram.me/{1})".format(user_id, username), parse_mode="Markdown", disable_web_page_preview=True)
-    #     await bot.send_contact(chat_id,  phone_number=cpn, first_name=cfn)
-    # if message.location:
-    #     await bot.send_message(chat_id, "#location [{0}](https://telegram.me/{1})".format(user_id, username), parse_mode="Markdown", disable_web_page_preview=True)
-    #     await bot.send_location(chat_id,  message.location.latitude, message.location.longitude)
-
-    await bot.send_photo(chat_id, "ONE.jpg", "ONE image")
-
-    # reply_markup = InlineKeyboardMarkup(
-    #     [
-    #         [
-    #             InlineKeyboardButton("Phone Number", callback_data=str(THREE)),
-    #             InlineKeyboardButton("Location", callback_data=str(FOUR)),
-    #         ]
-    #     ]
-    # )
-    # await message.reply_text(
-    #     text="What do you want to send?", reply_markup=reply_markup
-    # )
-    return END_ROUTES
-
-
 async def countries(update, context):
     query = update.callback_query
     await query.answer()
     message = query.message
-    data = query.data
-    match data:
+    user_text = query.data
+    match user_text:
         case "USA":
             await message.reply_text("Fuck USA")
         case "Viet Nam":
-            df = pd.read_excel("users_data.xlsx")
-            print(df)
-            df.at[df.index[-1], "Country"] = data
-            df.to_excel("users_data.xlsx", index=False)
+            df = pd.read_excel(USERS_DATA_PATH)
+            df.at[df.index[-1], "Country"] = user_text
+            df.to_excel(USERS_DATA_PATH, index=False)
+            await message.reply_text(
+                "That's so great to hear. I'm from Viet Nam, too.\n\n👇 Please enter your phone number below"
+            )
         case "Other":
             await message.reply_text("👇 Please enter your country name below")
-            return OTHER
+            return COUNTRIES_OTHER
+
+    return PHONE_NUMBER
 
 
-async def loc_usa(update, context):
-    await update.message.reply_text("Fuck USA")
+async def countries_other(update, context):
+    message = update.message
+    user_text = message.text
+    df = pd.read_excel(USERS_DATA_PATH)
+    df.at[df.index[-1], "Country"] = user_text
+    df.to_excel(USERS_DATA_PATH, index=False)
+    await message.reply_text(
+        f"{user_text} is a nice country. I've heard great things about it!\n\n👇 Please enter your phone number below",
+    )
+
+    return PHONE_NUMBER
+
+
+async def phone_number(update, context):
+    message = update.message
+    user_text = message.text
+    df = pd.read_excel(USERS_DATA_PATH)
+    df.at[df.index[-1], "Phone Number"] = user_text
+    df.to_excel(USERS_DATA_PATH, index=False)
+    await message.reply_text("I have received your information.")
+
+    # bot = context.bot
+    # chat_id = message.chat.id
+    # await bot.send_photo(chat_id, "ONE.jpg", "ONE image")
     return END_ROUTES
 
 
-async def loc_vietnam(update, context):
-    df = pd.read_excel("user_info")
-    print(pd)
-    df.iloc[-1, "Country"] = "Viet Nam"
+async def not_phone_number(update, context):
+    await update.message.reply_text(
+        "Seems like you entered an invalid phone number. Please enter again."
+    )
 
-
-async def loc_other(update, context):
-    query = update.callback_query
-    await query.answer()
-    message = query.message
-    await message.reply_text("👇 Please enter your country name below")
-    return OTHER
-
-
-async def loc_other_specify(update, context):
-    user_input = update.message.text
-    await update.message.reply_text(user_input)
-    df = pd.read_excel("users_data.xlsx")
-    df.at[df.index[-1], "Country"] = update.message.text
-    df.to_excel("users_data.xlsx", index=False)
-    # await update.message.reply_text(f"Your country has been set to {user_input}")
-    # return END_ROUTES
+    return PHONE_NUMBER
 
 
 async def end(update, context):
@@ -176,9 +157,13 @@ def main():
             COUNTRIES: [
                 CallbackQueryHandler(countries, pattern=""),
             ],
-            OTHER: [MessageHandler(filters.TEXT, loc_other_specify)],
-            END_ROUTES: [
-                CallbackQueryHandler(end, pattern="^" + str(END) + "$"),
+            # https://github.com/bulv1ne/country_list/ filters.Text(country_list)
+            COUNTRIES_OTHER: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, countries_other)
+            ],
+            PHONE_NUMBER: [
+                MessageHandler(filters.Regex(r"\d{10,11}"), phone_number),
+                MessageHandler(filters.TEXT & ~filters.COMMAND, not_phone_number),
             ],
         },
         fallbacks=[CommandHandler("start", start)],
