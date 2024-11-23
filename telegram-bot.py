@@ -28,6 +28,8 @@ filterwarnings(
 
 SELECT_COUNTRY, ASK_COUNTRY_OTHER, ASK_PHONE, SELECT_PLATFORM, ASK_DEPOSIT = range(5)
 
+print("Bot started...")
+
 
 async def start(update: Update, context: CallbackContext) -> int:
     message = update.message
@@ -95,7 +97,9 @@ async def ask_phone(update: Update, context: CallbackContext) -> int:
     phone = message.text
 
     if not re.fullmatch(r"\d{10,11}", phone):
-        await message.reply_text("👇 Please type a valid phone number")
+        await message.reply_text(
+            "Seems like you typed an invalid phone number. Please type again"
+        )
         return ASK_PHONE
 
     update_user_data(context.user_data["User Id"], {"Phone": str(phone)})
@@ -113,9 +117,7 @@ async def select_platform(update: Update, context: CallbackContext) -> int:
     update_user_data(context.user_data["User Id"], {"Platform": platform})
 
     await message.reply_text("Here is your link to open an account:", ACCOUNT_LINK)
-    await message.reply_text(
-        "Please follow this manual to open your account:"
-    )
+    await message.reply_text("Please follow this manual to open your account:")
     await message.bot.send_photo(
         chat_id=update.effective_chat.id,
         photo=open(GUIDE_IMAGE_PATH, "rb"),
@@ -131,7 +133,7 @@ async def ask_deposit(update: Update, context: CallbackContext) -> int:
     deposit = message.text
 
     if not deposit.isdigit():
-        await message.reply_text("👇 Please type a valid amount")
+        await message.reply_text("Please type a valid amount")
         return ASK_DEPOSIT
 
     update_user_data(context.user_data["User Id"], {"Deposit": float(deposit)})
@@ -144,12 +146,13 @@ async def ask_deposit(update: Update, context: CallbackContext) -> int:
 
 async def cancel(update: Update, context: CallbackContext) -> int:
     await update.message.reply_text(
-        "👋 Goodbye! Feel free to start again anytime.", reply_markup=ReplyKeyboardRemove()
+        "👋 Goodbye! Feel free to start again anytime.",
+        reply_markup=ReplyKeyboardRemove(),
     )
     return ConversationHandler.END
 
 
-def main():
+async def main():
     application = Application.builder().token(TOKEN).build()
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
