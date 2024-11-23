@@ -1,2 +1,5 @@
 python-telegram-bot
+openpyxl
 python-dotenv
+pandas
+country-list
