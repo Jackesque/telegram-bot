@@ -1,6 +1,6 @@
 *.env
-output/
-*local.py
+output/*.xlsx
+*.local.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

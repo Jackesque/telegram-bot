@@ -116,14 +116,13 @@ async def select_platform(update: Update, context: CallbackContext) -> int:
     platform = query.data
     update_user_data(context.user_data["User Id"], {"Platform": platform})
 
-    await message.reply_text("Here is your link to open an account:", ACCOUNT_LINK)
+    await message.reply_text(f"Here is your link to open an account: {ACCOUNT_LINK}")
     await message.reply_text("Please follow this manual to open your account:")
-    await message.bot.send_photo(
-        chat_id=update.effective_chat.id,
-        photo=open(GUIDE_IMAGE_PATH, "rb"),
-        caption="Guide to opening an account",
+    await context.bot.send_photo(
+        update.effective_chat.id,
+        open(GUIDE_IMAGE_PATH, "rb"),
+        "Guide to opening an account",
     )
-    # await context.bot.send_photo(message.chat.id, "ONE.jpg", "ONE image")
     await message.reply_text("👇 How much would you like to deposit?")
     return ASK_DEPOSIT
 
@@ -152,7 +151,7 @@ async def cancel(update: Update, context: CallbackContext) -> int:
     return ConversationHandler.END
 
 
-async def main():
+def main():
     application = Application.builder().token(TOKEN).build()
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],

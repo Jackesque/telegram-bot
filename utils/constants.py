@@ -2,7 +2,7 @@ import os
 
 from country_list import countries_for_language
 from dotenv import load_dotenv
-from telegram import InlineKeyboardButton
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 load_dotenv()
 
@@ -28,7 +28,7 @@ COUNTRIES = [country for country in COUNTRIES if country]
 
 PLATFORMS = ["KCM", "Dooprime"]
 
-PLATFORMS_KEYBOARD = InlineKeyboardButton(
+PLATFORMS_KEYBOARD = InlineKeyboardMarkup(
     [[InlineKeyboardButton(platform, callback_data=platform) for platform in PLATFORMS]]
 )
 
