@@ -13,9 +13,12 @@ def update_user_data(user_id, data):
         user_row = pd.DataFrame(df.loc[df["User Id"] == user_id])
 
         data_to_update = {
-            key: value for key, value in data.items() if key != "Timestamp"
+            key: value
+            for key, value in data.items()
+            if key not in ["Timestamp", "User Id"]
         }
         for key, value in data_to_update.items():
+            print(user_row.index, key, value)
             df.loc[user_row.index, key] = value
     else:
         df = pd.concat(
