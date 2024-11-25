@@ -154,8 +154,8 @@ async def cancel(update: Update, context: CallbackContext) -> int:
 def main():
     application = Application.builder().token(TOKEN).build()
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler("start", start)],
-        states={
+        [CommandHandler("start", start)],
+        {
             SELECT_COUNTRY: [CallbackQueryHandler(select_country)],
             ASK_COUNTRY_OTHER: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, ask_country_other)
@@ -164,7 +164,7 @@ def main():
             SELECT_PLATFORM: [CallbackQueryHandler(select_platform)],
             ASK_DEPOSIT: [MessageHandler(filters.TEXT & ~filters.COMMAND, ask_deposit)],
         },
-        fallbacks=[CommandHandler("cancel", cancel)],
+        [CommandHandler("start", start), CommandHandler("cancel", cancel)],
     )
 
     application.add_handler(conv_handler)

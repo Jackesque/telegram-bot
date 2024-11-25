@@ -1,15 +1,15 @@
 import pandas as pd
 
-from utils.constants import USERS_DATA_COLUMNS, USERS_DATA_PATH
+from utils.constants import DEV_USERS_DATA_PATH, USERS_DATA_COLUMNS, USERS_DATA_PATH
 
 
 def update_user_data(user_id, data):
     try:
-        df = pd.read_excel(USERS_DATA_PATH)
+        df = pd.read_csv(DEV_USERS_DATA_PATH)
     except FileNotFoundError:
         df = pd.DataFrame(columns=USERS_DATA_COLUMNS)
 
-    if user_id in df["User Id"].values:
+    if user_id in df["User Id"].array:
         user_row = pd.DataFrame(df.loc[df["User Id"] == user_id])
 
         data_to_update = {
@@ -24,4 +24,5 @@ def update_user_data(user_id, data):
             [df, pd.DataFrame([{"User Id": user_id, **data}])], ignore_index=True
         )
     df = df.fillna("")
+    df.to_csv(DEV_USERS_DATA_PATH, index=False)
     df.to_excel(USERS_DATA_PATH, index=False)
