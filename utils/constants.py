@@ -7,7 +7,6 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 load_dotenv()
 
 TOKEN = os.getenv("TOKEN")
-DEV_USERS_DATA_PATH = "./output/dev_users_data.csv"
 USERS_DATA_PATH = "./output/users_data.xlsx"
 
 USERS_DATA_COLUMNS = [

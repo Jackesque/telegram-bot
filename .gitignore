@@ -1,5 +1,6 @@
 *.env
-output/*.xlsx
+output/
+!output/index.txt
 *.local.py
 
 # Byte-compiled / optimized / DLL files

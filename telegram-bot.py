@@ -37,12 +37,12 @@ async def start(update: Update, context: CallbackContext) -> int:
     timestamp = (message.date + dt.timedelta(hours=7)).strftime("%d/%m/%Y %H:%M:%S")
     user_data = {
         "Timestamp": timestamp,
-        "User Id": user.id,
+        "User Id": str(user.id),
         "Username": user.username,
         "First Name": user.first_name,
         "Last Name": user.last_name,
     }
-    context.user_data["User Id"] = user.id
+    context.user_data["User Id"] = str(user.id)
 
     update_user_data(context.user_data["User Id"], user_data)
 
@@ -102,7 +102,7 @@ async def ask_phone(update: Update, context: CallbackContext) -> int:
         )
         return ASK_PHONE
 
-    update_user_data(context.user_data["User Id"], {"Phone": phone})
+    update_user_data(context.user_data["User Id"], {"Phone": str(phone)})
     await message.reply_text(
         "Which trading platform are you using?", reply_markup=PLATFORMS_KEYBOARD
     )

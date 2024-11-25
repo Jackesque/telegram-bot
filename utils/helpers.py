@@ -1,11 +1,11 @@
 import pandas as pd
 
-from utils.constants import DEV_USERS_DATA_PATH, USERS_DATA_COLUMNS, USERS_DATA_PATH
+from utils.constants import USERS_DATA_COLUMNS, USERS_DATA_PATH
 
 
 def update_user_data(user_id, data):
     try:
-        df = pd.read_csv(DEV_USERS_DATA_PATH)
+        df = pd.read_excel(USERS_DATA_PATH, dtype=str)
     except FileNotFoundError:
         df = pd.DataFrame(columns=USERS_DATA_COLUMNS)
 
@@ -23,6 +23,4 @@ def update_user_data(user_id, data):
         df = pd.concat(
             [df, pd.DataFrame([{"User Id": user_id, **data}])], ignore_index=True
         )
-    df = df.fillna("")
-    df.to_csv(DEV_USERS_DATA_PATH, index=False)
     df.to_excel(USERS_DATA_PATH, index=False)
