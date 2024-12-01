@@ -53,3 +53,9 @@ ACCOUNT_LINK = "https://my.dooprime.com/vi/links/go/47570"
 # Guide image directory path
 GUIDE_OPEN_ACCOUNT_DIRECTORY_PATH = "input/KCMTrade Open Account Guide"
 GUIDE_DEPOSIT_WITHDRAW_DIRECTORY_PATH = "input/KCMTrade Deposit and Withdraw Guide"
+GUIDE_DEPOSIT_DIRECTORY_PATH = os.path.join(
+    GUIDE_DEPOSIT_WITHDRAW_DIRECTORY_PATH, "deposit"
+)
+GUIDE_WITHDRAW_DIRECTORY_PATH = os.path.join(
+    GUIDE_DEPOSIT_WITHDRAW_DIRECTORY_PATH, "withdraw"
+)

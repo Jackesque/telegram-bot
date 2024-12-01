@@ -101,7 +101,7 @@ async def ask_country_other(update: Update, context: CallbackContext) -> int:
     update_user_data(context.user_data["Id người dùng"], {"Quốc gia": typed_country})
 
     await message.reply_text(
-        f"{typed_country} là một đất nước tuyệt vời. Tôi đã nghe nhiều điều tốt về nó!"
+        f"{typed_country} là một đất nước tuyệt vời. Tôi đã nghe nhiều điều tốt đẹp về nó!"
     )
     await message.reply_text("👇 Số điện thoại của bạn là gì?")
 
@@ -162,6 +162,7 @@ async def ask_deposit(update: Update, context: CallbackContext) -> int:
     await send_bulk_images(
         context.bot, update.effective_chat.id, GUIDE_DEPOSIT_WITHDRAW_DIRECTORY_PATH
     )
+    await message.reply_text("Chúc bạn một ngày tốt lành 🍀")
     return ConversationHandler.END
 
 

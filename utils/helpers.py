@@ -1,4 +1,5 @@
 import os
+import re
 
 import pandas as pd
 
@@ -46,7 +47,11 @@ def update_user_data(user_id, data, language="vi"):
 
 
 async def send_bulk_images(bot, chat_id, directory_path, caption=""):
-    for filename in os.listdir(directory_path):
+    sorted_directory_path = sorted(
+        [x for x in os.listdir(directory_path) if re.search(r"\d", x)],
+        key=lambda x: int(re.search(r"(\d+)", x).group()),
+    )
+    for filename in sorted_directory_path:
         if filename.lower().endswith((".png", ".jpg", ".jpeg", ".gif", ".bmp")):
             with open(os.path.join(directory_path, filename), "rb") as image_file:
                 caption = (
