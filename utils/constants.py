@@ -8,6 +8,7 @@ load_dotenv()
 
 TOKEN = os.getenv("TOKEN")
 USERS_DATA_PATH = "./output/users_data.xlsx"
+USERS_DATA_PATH_VI = "./output/Dữ liệu người dùng.xlsx"
 
 USERS_DATA_COLUMNS = [
     "Timestamp",
@@ -23,6 +24,20 @@ USERS_DATA_COLUMNS = [
     "Email (for VIP invitation)",
 ]
 
+USERS_DATA_COLUMNS_VI = [
+    "Thời gian",
+    "Id người dùng",
+    "Username",
+    "Tên",
+    "Họ",
+    "Quốc gia",
+    "SĐT",
+    # "Broker UID",
+    # "Broker Full Name",
+    "Số tiền gửi (VND)",
+    # "Email (for VIP invitation)",
+]
+
 COUNTRIES = [country[1] for country in countries_for_language("en")]
 COUNTRIES = [country for country in COUNTRIES if country]
 
@@ -32,8 +47,9 @@ PLATFORMS_KEYBOARD = InlineKeyboardMarkup(
     [[InlineKeyboardButton(platform, callback_data=platform) for platform in PLATFORMS]]
 )
 
-# Links (not provided)
-ACCOUNT_LINK = "https://example.com"
+# Links
+ACCOUNT_LINK = "https://my.dooprime.com/vi/links/go/47570"
 
-# Guide image path (not provided)
-GUIDE_IMAGE_PATH = "ONE.jpg"
+# Guide image directory path
+GUIDE_OPEN_ACCOUNT_DIRECTORY_PATH = "input/KCMTrade Open Account Guide"
+GUIDE_DEPOSIT_WITHDRAW_DIRECTORY_PATH = "input/KCMTrade Deposit and Withdraw Guide"
